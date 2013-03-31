@@ -96,6 +96,7 @@ function drawBoxGrid(context, color, x, y, xsize, ysize, step) {
 }
 
 function clearAnswer() {
+    'use strict';
     clearAnswerBox();
     prod1.value = '';
     prod2.value = '';
@@ -166,6 +167,7 @@ function askQuestion() {
 }
 
 function fillQuestion(n1, n2) {
+    'use strict';
     mult1.value = n1;
     mult2.value = n2;
     fillQuestionBox(n1, n2);
@@ -175,6 +177,7 @@ function fillQuestion(n1, n2) {
 }
 
 function fillAnswer(n1, n2) {
+    'use strict';
     prod1.value = n1;
     prod2.value = n2;
     fillAnswerBox(n1*10 + n2*1);
@@ -208,6 +211,7 @@ function calcGuess() {
 }
 
 function toDigit(before, after) {
+    'use strict';
     after = parseInt(after);
     if (isNaN(after) || after > 99) {
         return before;
@@ -314,6 +318,7 @@ mult2.oninput = function (e) {
 }
 
 prod1.onfocus = function (e) {
+    'use strict';
     problem.answer1 = prod1.value;  // used by toDigit() to limit input to 1 digit
 }
 
@@ -325,6 +330,7 @@ prod1.oninput = function (e) {
 }
 
 prod2.onfocus = function (e) {
+    'use strict';
     problem.answer2 = prod2.value;  // used by toDigit() to limit input to 1 digit
 }
 
