@@ -1,6 +1,5 @@
 /*
 Multiplication Table
-Tom Jacobs
 */
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
@@ -16,22 +15,29 @@ var BOX_SIZE = 200;
 
 var askme = document.getElementById('askme');
 var showme = document.getElementById('showme');
-var mult1 = document.getElementById('mult1');
-var mult2 = document.getElementById('mult2');
+var fact1 = document.getElementById('fact1');
+var fact2 = document.getElementById('fact2');
 var equal = document.getElementById('equal');
 var prod1 = document.getElementById('prod1');
 var prod2 = document.getElementById('prod2');
 
 var problem = {};
 
-problem.multiplier = 1;
-problem.multiplicand = 1;
+problem.factor1 = 1;
+problem.factor2 = 1;
 problem.answer1 = 0;  // used by toDigit() to limit input to 1 digit
 problem.answer2 = 0;  // used by toDigit() to limit input to 1 digit
 
 function getRandomInt(min, max) {
     'use strict';
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function windowToCanvas(canvas, x, y) {
+    var bbox = canvas.getBoundingClientRect();
+    return { x: x - bbox.left * (canvas.width  / bbox.width),
+             y: y - bbox.top  * (canvas.height / bbox.height)
+    };
 }
 
 function drawCanvasGrid(context, color, step) {
@@ -96,7 +102,6 @@ function drawBoxGrid(context, color, x, y, xsize, ysize, step) {
 }
 
 function clearAnswer() {
-    'use strict';
     clearAnswerBox();
     prod1.value = '';
     prod2.value = '';
@@ -105,14 +110,22 @@ function clearAnswer() {
 
 function clearAnswerBox() {
     'use strict';
+    var keepStyle = context.fillStyle;  // possible fix for PhoneGap
     context.clearRect(A_BOX_X, A_BOX_Y, BOX_SIZE, BOX_SIZE);
+    context.fillStyle = 'white';  // possible fix for PhoneGap
+    context.fillRect(A_BOX_X, A_BOX_Y, BOX_SIZE, BOX_SIZE);  // possible fix for PhoneGap
+    context.fillStyle = keepStyle;  // possible fix for PhoneGap
     drawBoxGrid(context, GRID_COLOR, A_BOX_X, A_BOX_Y,
         BOX_SIZE, BOX_SIZE, GRID_STEP);
 }
 
 function clearQuestionBox() {
     'use strict';
+    var keepStyle = context.fillStyle;  // possible fix for PhoneGap
     context.clearRect(Q_BOX_X, Q_BOX_Y, BOX_SIZE, BOX_SIZE);
+    context.fillStyle = 'white';  // possible fix for PhoneGap
+    context.fillRect(Q_BOX_X, Q_BOX_Y, BOX_SIZE, BOX_SIZE);  // possible fix for PhoneGap
+    context.fillStyle = keepStyle;  // possible fix for PhoneGap
     drawBoxGrid(context, GRID_COLOR, Q_BOX_X, Q_BOX_Y,
         BOX_SIZE, BOX_SIZE, GRID_STEP);
 }
@@ -141,7 +154,7 @@ function fillAnswerBox(num) {
     w = GRID_STEP * 10;
     h = GRID_STEP * tens;
     context.strokeStyle = 'black';
-    if (num == problem.multiplier * problem.multiplicand) {
+    if (num == problem.factor1 * problem.factor2) {
         equal.textContent = '=';
         context.fillStyle = 'aqua';
     } else {
@@ -167,17 +180,15 @@ function askQuestion() {
 }
 
 function fillQuestion(n1, n2) {
-    'use strict';
-    mult1.value = n1;
-    mult2.value = n2;
+    fact1.value = n1;
+    fact2.value = n2;
     fillQuestionBox(n1, n2);
-    problem.multiplier = n1;
-    problem.multiplicand = n2;
+    problem.factor1 = n1;
+    problem.factor2 = n2;
     clearAnswer();
 }
 
 function fillAnswer(n1, n2) {
-    'use strict';
     prod1.value = n1;
     prod2.value = n2;
     fillAnswerBox(n1*10 + n2*1);
@@ -186,7 +197,7 @@ function fillAnswer(n1, n2) {
 function showAnswer() {
     'use strict';
     var num, ones, tens;
-    num = problem.multiplier * problem.multiplicand;
+    num = problem.factor1 * problem.factor2;
     ones = num % 10;
     tens = Math.floor(num / 10);
     if (tens == 0) {
@@ -211,7 +222,6 @@ function calcGuess() {
 }
 
 function toDigit(before, after) {
-    'use strict';
     after = parseInt(after);
     if (isNaN(after) || after > 99) {
         return before;
@@ -243,11 +253,12 @@ function drawScreen() {
 
 canvas.onmousedown = function (e) {
     'use strict';
-    var x, y, box, n1, n2;
+    var loc, x, y, box, n1, n2;
     e = e || window.event;  // for IE
     e.preventDefault();
-    x = e.clientX - (Q_BOX_X + MARGIN);
-    y = e.clientY - (Q_BOX_Y + MARGIN);
+    loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    x = loc.x - Q_BOX_X;
+    y = loc.y - Q_BOX_Y;
     if ((x < 0) || (y > BOX_SIZE)) {
         return;
     }
@@ -264,10 +275,10 @@ canvas.onmousedown = function (e) {
     // Now box is either 'A' or 'Q' and x,y is in the box.
     if (box === 'Q') {
         if ((x > BOX_SIZE - GRID_STEP) || (y < GRID_STEP)) {
-            return;  //ignore 10 row for multiplier and multiplicand
+            return;  //ignore 10 row for factor1 and factor2
         } else {
-            n1 = 10 - Math.floor(y / GRID_STEP);  // multiplier
-            n2 = Math.floor(x / GRID_STEP) + 1;  // multiplicand
+            n1 = 10 - Math.floor(y / GRID_STEP);  // factor1
+            n2 = Math.floor(x / GRID_STEP) + 1;  // factor2
             fillQuestion(n1, n2);
         }
     } else {  // box = 'A'
@@ -284,7 +295,7 @@ canvas.onmousedown = function (e) {
 askme.onclick = function (e) {
     'use strict';
     e.preventDefault();
-    askQuestion();    // sets problem.multiplier .multiplicand and .product
+    askQuestion();    // sets problem.factor1 .factor2 and .product
 }
 
 showme.onclick = function (e) {
@@ -293,32 +304,23 @@ showme.onclick = function (e) {
     showAnswer();
 }
 
-mult1.onfocus = function (e) {
-//    mult1.value = '';
-}
-
-mult1.oninput = function (e) {
+fact1.oninput = function (e) {
     'use strict';
-    mult1.value = toDigit(problem.multiplier, mult1.value);
-    problem.multiplier = mult1.value;
-    fillQuestionBox(problem.multiplier, problem.multiplicand);
+    fact1.value = toDigit(problem.factor1, fact1.value);
+    problem.factor1 = fact1.value;
+    fillQuestionBox(problem.factor1, problem.factor2);
     clearAnswer();
 }
 
-mult2.onfocus = function (e) {
-//    mult2.value = '';
-}
-
-mult2.oninput = function (e) {
+fact2.oninput = function (e) {
     'use strict';
-    mult2.value = toDigit(problem.multiplicand, mult2.value);
-    problem.multiplicand = mult2.value;
-    fillQuestionBox(problem.multiplier, problem.multiplicand);
+    fact2.value = toDigit(problem.factor2, fact2.value);
+    problem.factor2 = fact2.value;
+    fillQuestionBox(problem.factor1, problem.factor2);
     clearAnswer();
 }
 
 prod1.onfocus = function (e) {
-    'use strict';
     problem.answer1 = prod1.value;  // used by toDigit() to limit input to 1 digit
 }
 
@@ -330,7 +332,6 @@ prod1.oninput = function (e) {
 }
 
 prod2.onfocus = function (e) {
-    'use strict';
     problem.answer2 = prod2.value;  // used by toDigit() to limit input to 1 digit
 }
 
@@ -342,4 +343,4 @@ prod2.oninput = function (e) {
 }
 
 drawScreen();
-askQuestion();    // sets problem.multiplier .multiplicand and .product
+askQuestion();    // sets problem.factor1 .factor2 and .product
