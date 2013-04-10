@@ -4,6 +4,8 @@ Multiplication Table
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
+var fromKey;
+
 var GRID_COLOR = 'lightblue';
 var GRID_STEP = 20;
 var MARGIN = 18;  // left and top margin of canvas
@@ -14,6 +16,7 @@ var A_BOX_Y = 60;
 var BOX_SIZE = 200;
 
 var askme = document.getElementById('askme');
+var difficulty = document.getElementById('difficulty');
 var showme = document.getElementById('showme');
 var fact1 = document.getElementById('fact1');
 var fact2 = document.getElementById('fact2');
@@ -27,6 +30,8 @@ problem.factor1 = 1;
 problem.factor2 = 1;
 problem.answer1 = 0;  // used by toDigit() to limit input to 1 digit
 problem.answer2 = 0;  // used by toDigit() to limit input to 1 digit
+
+keyboard = new COREHTML5.Keyboard();
 
 function getRandomInt(min, max) {
     'use strict';
@@ -160,13 +165,13 @@ function fillAnswerBox(num) {
     } else {
         equal.textContent = '';
         context.fillStyle = 'lightblue';
-    }        
+    };      
     clearAnswerBox();
     context.fillRect(x, y, w, h);
     for (i = y + 0.5; i < y + (GRID_STEP * tens); i += GRID_STEP) {
         context.strokeStyle = 'black';
         context.strokeRect(x, i, w, GRID_STEP);
-    }
+    };
     y -= GRID_STEP;
     w = GRID_STEP * ones;
     h = GRID_STEP;
@@ -176,7 +181,27 @@ function fillAnswerBox(num) {
 
 function askQuestion() {
     'use strict';
-    fillQuestion(getRandomInt(2,9), getRandomInt(2,9));
+    var from, to;
+    if (difficulty.value === 'easy') {
+        from = 1;
+        to = 5;
+        fillQuestion(getRandomInt(from, to), getRandomInt(from, to));
+    } else {
+        from = 6;
+        to = 9;
+    };
+    
+    if (difficulty.value === 'medium') {
+        if (getRandomInt(1,2) === 1) {
+            fillQuestion(getRandomInt(2,5), getRandomInt(from, to));
+        } else {
+            fillQuestion(getRandomInt(from, to), getRandomInt(2,5));
+        }
+    };
+    
+    if (difficulty.value === 'hard') {    
+        fillQuestion(getRandomInt(from, to), getRandomInt(from, to));
+    };
 }
 
 function fillQuestion(n1, n2) {
@@ -220,7 +245,7 @@ function calcGuess() {
     }
     return m + n;  // concatenate two string digits}
 }
-
+/*
 function toDigit(before, after) {
     after = parseInt(after);
     if (isNaN(after) || after > 99) {
@@ -237,7 +262,7 @@ function toDigit(before, after) {
         return after;
     }
 }
-
+*/
 function drawScreen() {
     'use strict';
     drawCanvasGrid(context, GRID_COLOR, GRID_STEP);
@@ -247,6 +272,37 @@ function drawScreen() {
     drawBoxLabels(context, 1, 10, 1, 67, 20, 275, 0);
     drawBoxLabels(context, 1, 10, 1, 387, 20, 275, 0);
     drawBoxLabels(context, 10, 100, 10, 585, 0, 255, -20);
+}
+
+// Keyboard......................................................
+
+function showKeyboard(from) {
+    var keyboardElement = document.getElementById('keyboard');
+
+    if (fromKey.substring(0,4) === 'prod') {
+        keyboardElement.style.left = '378px';
+    } else {
+        keyboardElement.style.left = '58px';
+    };
+    keyboardElement.style.height = '240px';
+    keyboardElement.style.top = '58px';
+    keyboardElement.style.border = 'thin inset rgba(0,0,0,0.5)';
+    keyboardElement.style.borderRadius = '20px';
+
+    keyboard.resize(1000, 368);
+    keyboard.translucent = true;
+    keyboard.draw();
+}
+
+function hideKeyboard() {
+   var keyboardElement = document.getElementById('keyboard');
+
+   keyboardElement.style.height = '0px';
+   keyboardElement.style.top = '0px';
+   keyboardElement.style.border = '';
+   keyboardElement.style.borderRadius = '';
+
+   keyboard.resize(1000, 0);
 }
 
 // Initialization................................................
@@ -295,52 +351,75 @@ canvas.onmousedown = function (e) {
 askme.onclick = function (e) {
     'use strict';
     e.preventDefault();
+    hideKeyboard();
     askQuestion();    // sets problem.factor1 .factor2 and .product
 }
 
 showme.onclick = function (e) {
     'use strict';
     e.preventDefault();
+    hideKeyboard();
     showAnswer();
 }
 
-fact1.oninput = function (e) {
+fact1.onclick = function (e) {
     'use strict';
-    fact1.value = toDigit(problem.factor1, fact1.value);
-    problem.factor1 = fact1.value;
-    fillQuestionBox(problem.factor1, problem.factor2);
-    clearAnswer();
+    fromKey = 'fact1';
+    fact1.focus();
+    showKeyboard();
 }
 
-fact2.oninput = function (e) {
+fact2.onclick = function (e) {
     'use strict';
-    fact2.value = toDigit(problem.factor2, fact2.value);
-    problem.factor2 = fact2.value;
-    fillQuestionBox(problem.factor1, problem.factor2);
-    clearAnswer();
+    fromKey = 'fact2';
+    fact2.focus();
+    showKeyboard();
 }
 
-prod1.onfocus = function (e) {
-    problem.answer1 = prod1.value;  // used by toDigit() to limit input to 1 digit
+prod1.onclick = function (e) {
+    'use strict';
+    fromKey = 'prod1';
+    prod1.focus();
+    showKeyboard();
 }
 
-prod1.oninput = function (e) {
+prod2.onclick = function (e) {
     'use strict';
-    prod1.value = toDigit(problem.answer1, prod1.value);
-    fillAnswerBox(calcGuess());
+    fromKey = 'prod2';
     prod2.focus();
+    showKeyboard();
 }
 
-prod2.onfocus = function (e) {
-    problem.answer2 = prod2.value;  // used by toDigit() to limit input to 1 digit
-}
-
-prod2.oninput = function (e) {
-    'use strict';
-    prod2.value = toDigit(problem.answer2, prod2.value);
-    fillAnswerBox(calcGuess());
-    problem.answer2 = prod2.value;
-}
+keyboard.appendTo('keyboard');
+keyboard.addKeyListener( function (key) {
+    fact2.blur();  // these 2 buttons don't change focus
+    prod2.blur();  // so need to lose focus here
+    if (fromKey === 'fact1') {
+        fact1.value = key;
+        problem.factor1 = fact1.value;
+        fillQuestionBox(problem.factor1, problem.factor2);
+        clearAnswer();
+        fromKey = 'fact2';
+        fact2.focus();  // keyboard left on
+    } else if (fromKey === 'fact2'){
+        fact2.value = key;
+        problem.factor2 = fact2.value;
+        fillQuestionBox(problem.factor1, problem.factor2);
+        clearAnswer();
+        hideKeyboard();
+    } else if (fromKey === 'prod1'){
+        prod1.value = key;
+        problem.answer1 = prod1.value;
+        fillAnswerBox(calcGuess());
+        fromKey = 'prod2';
+        prod2.focus();  // keyboard left on
+    } else if (fromKey === 'prod2'){
+        prod2.value = key;
+        problem.answer2 = prod2.value;
+        fillAnswerBox(calcGuess());
+        hideKeyboard();
+    }
+});
 
 drawScreen();
 askQuestion();    // sets problem.factor1 .factor2 and .product
