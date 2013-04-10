@@ -12,12 +12,9 @@ body {
  box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
-#mult1 #mult2 #answer{
- font: 60px arial,sans-serif;
-}
-
-#mult1 {
+#fact1 {
  position: absolute;
+ cursor: pointer;
  left:  80px;
  top: 320px;
  width: 1em;
@@ -32,8 +29,9 @@ body {
  font: 60px arial,sans-serif;
 }
 
-#mult2 {
+#fact2 {
  position: absolute;
+ cursor: pointer;
  left:  212px;
  top: 320px;
  width: 1em;
@@ -50,18 +48,22 @@ body {
 
 #prod1 {
  position: absolute;
+ cursor: pointer;
  left:  436px;
  top: 320px;
  width: 1em;
+ height: 1.3em;
  font: 60px arial,sans-serif;
  text-align: center;
 }
   
 #prod2 {
  position: absolute;
+ cursor: pointer;
  left:  500px;
  top: 320px;
  width: 1em;
+ height: 1.3em;
  font: 60px arial,sans-serif;
  text-align: center;
 }
@@ -83,10 +85,30 @@ body {
  font-size: 30px;
 }
  
+ #difficulty {
+ position: absolute;
+ left: 145px;
+ top: 460px;
+}
+
  #showme {
  position: absolute;
  cursor: pointer;
  left:  427px;
  top: 416px;
  font-size: 30px;
+}
+
+#keyboard {
+ position: absolute;
+ left: 58px;
+ top: 0px;
+ width: 240px;
+ height: 0px;
+
+ background: rgba(229, 229, 238, 1);
+
+ -webkit-box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
+ -moz-box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
+ box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
 }
