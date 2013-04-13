@@ -14,6 +14,7 @@ var Q_BOX_Y = 60;
 var A_BOX_X = 380;  // Answer Box upper left
 var A_BOX_Y = 60;
 var BOX_SIZE = 200;
+var dragging = false;  // for box grids
 
 var askme = document.getElementById('askme');
 var difficulty = document.getElementById('difficulty');
@@ -36,14 +37,14 @@ keyboard = new COREHTML5.Keyboard();
 function getRandomInt(min, max) {
     'use strict';
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 function windowToCanvas(canvas, x, y) {
     var bbox = canvas.getBoundingClientRect();
     return { x: x - bbox.left * (canvas.width  / bbox.width),
              y: y - bbox.top  * (canvas.height / bbox.height)
     };
-}
+};
 
 function drawCanvasGrid(context, color, step) {
     'use strict';
@@ -64,13 +65,13 @@ function drawCanvasGrid(context, color, step) {
         context.lineTo(context.canvas.width, i);
         context.stroke();
     }
-}
+};
 
 function drawBoxOutline(context, x, y, w, h) {
     'use strict';
     context.strokeStyle = 'black';
     context.strokeRect(x - 0.5, y - 0.5, w + 1, h + 1);
-}
+};
 
 function drawBoxLabels(context, startNum, endNum, incrNum, x, incrX, y,
         incrY) {
@@ -83,7 +84,7 @@ function drawBoxLabels(context, startNum, endNum, incrNum, x, incrX, y,
         x += incrX;
         y += incrY;
     }
-}
+};
 
 function drawBoxGrid(context, color, x, y, xsize, ysize, step) {
     'use strict';
@@ -104,14 +105,14 @@ function drawBoxGrid(context, color, x, y, xsize, ysize, step) {
         context.lineTo(x + xsize, i);
         context.stroke();
     }
-}
+};
 
 function clearAnswer() {
     clearAnswerBox();
     prod1.value = '';
     prod2.value = '';
     equal.textContent = '';
-}    
+};    
 
 function clearAnswerBox() {
     'use strict';
@@ -122,7 +123,7 @@ function clearAnswerBox() {
     context.fillStyle = keepStyle;  // possible fix for PhoneGap
     drawBoxGrid(context, GRID_COLOR, A_BOX_X, A_BOX_Y,
         BOX_SIZE, BOX_SIZE, GRID_STEP);
-}
+};
 
 function clearQuestionBox() {
     'use strict';
@@ -133,7 +134,7 @@ function clearQuestionBox() {
     context.fillStyle = keepStyle;  // possible fix for PhoneGap
     drawBoxGrid(context, GRID_COLOR, Q_BOX_X, Q_BOX_Y,
         BOX_SIZE, BOX_SIZE, GRID_STEP);
-}
+};
 
 function fillQuestionBox(n1, n2) {
     'use strict';
@@ -147,7 +148,7 @@ function fillQuestionBox(n1, n2) {
     clearQuestionBox();
     context.fillRect(x, y, w, h);
     drawBoxGrid(context, 'black', x, y, w + 1, h, GRID_STEP);
-}
+};
 
 function fillAnswerBox(num) {
     'use strict';
@@ -177,7 +178,7 @@ function fillAnswerBox(num) {
     h = GRID_STEP;
     context.fillRect(x, y, w, h);
     drawBoxGrid(context, 'black', x, y, w + 1, h, GRID_STEP);
-}
+};
 
 function askQuestion() {
     'use strict';
@@ -202,7 +203,7 @@ function askQuestion() {
     if (difficulty.value === 'hard') {    
         fillQuestion(getRandomInt(from, to), getRandomInt(from, to));
     };
-}
+};
 
 function fillQuestion(n1, n2) {
     fact1.value = n1;
@@ -211,13 +212,17 @@ function fillQuestion(n1, n2) {
     problem.factor1 = n1;
     problem.factor2 = n2;
     clearAnswer();
-}
+};
 
 function fillAnswer(n1, n2) {
+    var answer;
     prod1.value = n1;
     prod2.value = n2;
-    fillAnswerBox(n1*10 + n2*1);
-}
+    answer = n1*10 + n2*1;
+    if (answer > 0) {
+        fillAnswerBox(n1*10 + n2*1);
+    };
+};
     
 function showAnswer() {
     'use strict';
@@ -232,7 +237,7 @@ function showAnswer() {
     }
     prod2.value = ones;
     fillAnswerBox(num);
-}
+};
 
 function calcGuess() {
     'use strict';
@@ -244,25 +249,8 @@ function calcGuess() {
         prod2.value = 0;
     }
     return m + n;  // concatenate two string digits}
-}
-/*
-function toDigit(before, after) {
-    after = parseInt(after);
-    if (isNaN(after) || after > 99) {
-        return before;
-    } else if (after > 9) {
-        after1 = Math.floor(after / 10);
-        after2 = after % 10;
-        if (before == after1) {
-            return after2;
-        } else {
-            return after1;
-        }
-    } else {
-        return after;
-    }
-}
-*/
+};
+
 function drawScreen() {
     'use strict';
     drawCanvasGrid(context, GRID_COLOR, GRID_STEP);
@@ -272,7 +260,7 @@ function drawScreen() {
     drawBoxLabels(context, 1, 10, 1, 67, 20, 275, 0);
     drawBoxLabels(context, 1, 10, 1, 387, 20, 275, 0);
     drawBoxLabels(context, 10, 100, 10, 585, 0, 255, -20);
-}
+};
 
 // Keyboard......................................................
 
@@ -292,7 +280,7 @@ function showKeyboard(from) {
     keyboard.resize(1000, 368);
     keyboard.translucent = true;
     keyboard.draw();
-}
+};
 
 function hideKeyboard() {
    var keyboardElement = document.getElementById('keyboard');
@@ -303,41 +291,37 @@ function hideKeyboard() {
    keyboardElement.style.borderRadius = '';
 
    keyboard.resize(1000, 0);
-}
+};
 
-// Initialization................................................
-
-canvas.onmousedown = function (e) {
-    'use strict';
-    var loc, x, y, box, n1, n2;
-    e = e || window.event;  // for IE
-    e.preventDefault();
-    loc = windowToCanvas(canvas, e.clientX, e.clientY);
-    x = loc.x - Q_BOX_X;
-    y = loc.y - Q_BOX_Y;
-    if ((x < 0) || (y > BOX_SIZE)) {
-        return;
+function whichBox(x, y) {
+    if ((x < 0) || (y >= BOX_SIZE)) {
+        return '';
     }
     if (x < BOX_SIZE) {
-        box = 'Q';
+        return 'Q';
     } else {
-        x = e.clientX - (A_BOX_X + MARGIN);
+        x = x + Q_BOX_X - A_BOX_X;  // adjust x for 'A' box
         if ((x < 0) || (x > BOX_SIZE)) {
-            return;
+            return '';
         } else {
-            box = 'A';
+            return 'A';
         }
     }
-    // Now box is either 'A' or 'Q' and x,y is in the box.
+};
+
+function fillBox(box, x, y) {
+    var n1, n2;
+    
     if (box === 'Q') {
-        if ((x > BOX_SIZE - GRID_STEP) || (y < GRID_STEP)) {
+        if ((x >= BOX_SIZE - GRID_STEP) || (y < GRID_STEP)) {
             return;  //ignore 10 row for factor1 and factor2
         } else {
             n1 = 10 - Math.floor(y / GRID_STEP);  // factor1
             n2 = Math.floor(x / GRID_STEP) + 1;  // factor2
             fillQuestion(n1, n2);
         }
-    } else {  // box = 'A'
+    } else if (box === 'A') {
+        x = x + Q_BOX_X - A_BOX_X;  // adjust x for 'A' box
         n2 = Math.floor(x / GRID_STEP) + 1;  // ones digit of answer
         n2 = (n2 < 10) ? n2 : 0;  // ones digit is 0 in last column
         n1 = 10 - Math.floor(y / GRID_STEP);  // tens digit
@@ -346,49 +330,94 @@ canvas.onmousedown = function (e) {
             fillAnswer(n1, n2);
         }
     }
-}
+};
+// Initialization................................................
+
+canvas.onmousedown = function (e) {
+    'use strict';
+    var loc, x, y, box;
+    e = e || window.event;  // for IE
+    e.preventDefault();
+    loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    x = loc.x - Q_BOX_X;
+    y = loc.y - Q_BOX_Y;
+    
+    box = whichBox(x, y);
+
+    // Now box is either 'A' or 'Q' and x,y is in the box.
+    // or box is '' and x,y is not in the box.
+    if (box) {
+        fillBox(box, x, y);
+        dragging = true;
+    }
+};
+
+canvas.onmousemove = function (e) {
+    'use strict';
+    var loc, x, y, box;
+    
+    if (dragging) {
+        e = e || window.event;  // for IE
+        e.preventDefault();
+        loc = windowToCanvas(canvas, e.clientX, e.clientY);
+        x = loc.x - Q_BOX_X;
+        y = loc.y - Q_BOX_Y;
+        
+        box = whichBox(x, y);
+
+        // Now box is either 'A' or 'Q' and x,y is in the box.
+        // or box is '' and x,y is not in the box.
+        if (box) {
+            fillBox(box, x, y);
+        }
+    }
+};
+
+canvas.onmouseup = function (e) {
+    dragging = false;
+};
 
 askme.onclick = function (e) {
     'use strict';
     e.preventDefault();
     hideKeyboard();
     askQuestion();    // sets problem.factor1 .factor2 and .product
-}
+};
 
 showme.onclick = function (e) {
     'use strict';
     e.preventDefault();
     hideKeyboard();
     showAnswer();
-}
+};
 
 fact1.onclick = function (e) {
     'use strict';
     fromKey = 'fact1';
     fact1.focus();
     showKeyboard();
-}
+};
 
 fact2.onclick = function (e) {
     'use strict';
     fromKey = 'fact2';
     fact2.focus();
     showKeyboard();
-}
+};
 
 prod1.onclick = function (e) {
     'use strict';
     fromKey = 'prod1';
     prod1.focus();
     showKeyboard();
-}
+};
 
 prod2.onclick = function (e) {
     'use strict';
     fromKey = 'prod2';
     prod2.focus();
     showKeyboard();
-}
+};
 
 keyboard.appendTo('keyboard');
 keyboard.addKeyListener( function (key) {
