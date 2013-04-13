@@ -12,6 +12,13 @@ body {
  box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
+#title {
+ position: absolute;
+ left: 250px;
+ top: 20px;
+ font: bold 20px courier,sans-serif;
+}
+
 #fact1 {
  position: absolute;
  cursor: pointer;
@@ -82,13 +89,13 @@ body {
  cursor: pointer;
  left:  124px;
  top: 416px;
- font-size: 30px;
+ font: 30px arial,sans-serif;
 }
  
  #difficulty {
  position: absolute;
  left: 145px;
- top: 460px;
+ top: 470px;
 }
 
  #showme {
@@ -96,7 +103,7 @@ body {
  cursor: pointer;
  left:  427px;
  top: 416px;
- font-size: 30px;
+ font: 30px arial,sans-serif;
 }
 
 #keyboard {
@@ -111,4 +118,9 @@ body {
  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
  -moz-box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
  box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
+}
+
+/* Change background colour on :focus */
+.number:focus {
+ background: lightblue; color: lightblue; outline: 0;
 }
