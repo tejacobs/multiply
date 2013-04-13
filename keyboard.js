@@ -71,7 +71,7 @@ COREHTML5.Key.prototype = {  // IE can't handle arcTo()
    },
    
    setKeyProperties: function (context, keyGradient) {
-     context.shadowColor = 'rgba(0, 0, 0, 0.8)';
+	   context.shadowColor = 'rgba(0, 0, 0, 0.8)';
 	   context.shadowOffsetX = 1;
 	   context.shadowOffsetY = 1;
       context.shadowBlur = 1;
