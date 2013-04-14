@@ -336,19 +336,19 @@ function fillBox(box, x, y) {
 canvas.ontouchstart = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseDownOrTouchStart(windowToCanvas(e.pageX, e.pageY));
+   mouseDownOrTouchStart(windowToCanvas(canvas, e.pageX, e.pageY));
 };
 
 canvas.ontouchmove = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseMoveOrTouchMove(windowToCanvas(e.pageX, e.pageY));
+   mouseMoveOrTouchMove(windowToCanvas(canvas, e.pageX, e.pageY));
 };
 
 canvas.ontouchend = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseUpOrTouchEnd(windowToCanvas(e.pageX, e.pageY));
+   mouseUpOrTouchEnd(windowToCanvas(canvas, e.pageX, e.pageY));
 };
 
 // Mouse Event Handlers........................................
