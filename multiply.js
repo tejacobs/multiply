@@ -39,7 +39,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-function windowToCanvas(canvas, x, y) {
+function windowToCanvas(x, y) {
     var bbox = canvas.getBoundingClientRect();
     return { x: x - bbox.left * (canvas.width  / bbox.width),
              y: y - bbox.top  * (canvas.height / bbox.height)
@@ -336,19 +336,19 @@ function fillBox(box, x, y) {
 canvas.ontouchstart = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseDownOrTouchStart(windowToCanvas(canvas, e.pageX, e.pageY));
+   mouseDownOrTouchStart(windowToCanvas(e.pageX, e.pageY));
 };
 
 canvas.ontouchmove = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseMoveOrTouchMove(windowToCanvas(canvas, e.pageX, e.pageY));
+   mouseMoveOrTouchMove(windowToCanvas(e.pageX, e.pageY));
 };
 
 canvas.ontouchend = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseUpOrTouchEnd(windowToCanvas(canvas, e.pageX, e.pageY));
+   mouseUpOrTouchEnd(windowToCanvas(e.pageX, e.pageY));
 };
 
 // Mouse Event Handlers........................................
@@ -356,19 +356,19 @@ canvas.ontouchend = function (e) {
 canvas.onmousedown = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseDownOrTouchStart(windowToCanvas(canvas, e.clientX, e.clientY));
+   mouseDownOrTouchStart(windowToCanvas(e.clientX, e.clientY));
 };
 
 canvas.onmousemove = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseMoveOrTouchMove(windowToCanvas(canvas, e.clientX, e.clientY));
+   mouseMoveOrTouchMove(windowToCanvas(e.clientX, e.clientY));
 };
 
 canvas.onmouseup = function (e) { 
    e = e || window.event;  // for IE
    e.preventDefault(e);
-   mouseUpOrTouchEnd(windowToCanvas(canvas, e.clientX, e.clientY));
+   mouseUpOrTouchEnd(windowToCanvas(e.clientX, e.clientY));
 };
 
 function mouseDownOrTouchStart(loc) {
@@ -415,7 +415,7 @@ canvas.onmousedown = function (e) {
     var loc, x, y, box;
     e = e || window.event;  // for IE
     e.preventDefault();
-    loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    loc = windowToCanvas(e.clientX, e.clientY);
     x = loc.x - Q_BOX_X;
     y = loc.y - Q_BOX_Y;
     
@@ -436,7 +436,7 @@ canvas.onmousemove = function (e) {
     if (dragging) {
         e = e || window.event;  // for IE
         e.preventDefault();
-        loc = windowToCanvas(canvas, e.clientX, e.clientY);
+        loc = windowToCanvas(e.clientX, e.clientY);
         x = loc.x - Q_BOX_X;
         y = loc.y - Q_BOX_Y;
         
