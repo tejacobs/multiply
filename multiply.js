@@ -334,19 +334,16 @@ function fillBox(box, x, y) {
 // Initialization................................................
 // Touch Event Handlers........................................
 canvas.ontouchstart = function (e) { 
-   e = e || window.event;  // for IE
    e.preventDefault(e);
    mouseDownOrTouchStart(windowToCanvas(e.pageX, e.pageY));
 };
 
 canvas.ontouchmove = function (e) { 
-   e = e || window.event;  // for IE
    e.preventDefault(e);
    mouseMoveOrTouchMove(windowToCanvas(e.pageX, e.pageY));
 };
 
 canvas.ontouchend = function (e) { 
-   e = e || window.event;  // for IE
    e.preventDefault(e);
    mouseUpOrTouchEnd(windowToCanvas(e.pageX, e.pageY));
 };
