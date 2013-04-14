@@ -332,7 +332,84 @@ function fillBox(box, x, y) {
     }
 };
 // Initialization................................................
+// Touch Event Handlers........................................
+canvas.ontouchstart = function (e) { 
+   e = e || window.event;  // for IE
+   e.preventDefault(e);
+   mouseDownOrTouchStart(windowToCanvas(e.pageX, e.pageY));
+};
 
+canvas.ontouchmove = function (e) { 
+   e = e || window.event;  // for IE
+   e.preventDefault(e);
+   mouseMoveOrTouchMove(windowToCanvas(e.pageX, e.pageY));
+};
+
+canvas.ontouchend = function (e) { 
+   e = e || window.event;  // for IE
+   e.preventDefault(e);
+   mouseUpOrTouchEnd(windowToCanvas(e.pageX, e.pageY));
+};
+
+// Mouse Event Handlers........................................
+
+canvas.onmousedown = function (e) { 
+   e = e || window.event;  // for IE
+   e.preventDefault(e);
+   mouseDownOrTouchStart(windowToCanvas(canvas, e.clientX, e.clientY));
+};
+
+canvas.onmousemove = function (e) { 
+   e = e || window.event;  // for IE
+   e.preventDefault(e);
+   mouseMoveOrTouchMove(windowToCanvas(canvas, e.clientX, e.clientY));
+};
+
+canvas.onmouseup = function (e) { 
+   e = e || window.event;  // for IE
+   e.preventDefault(e);
+   mouseUpOrTouchEnd(windowToCanvas(canvas, e.clientX, e.clientY));
+};
+
+function mouseDownOrTouchStart(loc) {
+    'use strict';
+    var x, y, box;
+    x = loc.x - Q_BOX_X;
+    y = loc.y - Q_BOX_Y;
+    
+    box = whichBox(x, y);
+
+    // Now box is either 'A' or 'Q' and x,y is in the box.
+    // or box is '' and x,y is not in the box.
+    if (box) {
+        fillBox(box, x, y);
+        dragging = true;
+    }
+};
+
+function mouseMoveOrTouchMove(loc) {
+    'use strict';
+    var x, y, box;
+    
+    if (dragging) {
+        x = loc.x - Q_BOX_X;
+        y = loc.y - Q_BOX_Y;
+        
+        box = whichBox(x, y);
+
+        // Now box is either 'A' or 'Q' and x,y is in the box.
+        // or box is '' and x,y is not in the box.
+        if (box) {
+            fillBox(box, x, y);
+        }
+    }
+};
+
+function mouseUpOrTouchEnd(loc) {
+    'use strict';
+    dragging = false;
+};
+/*
 canvas.onmousedown = function (e) {
     'use strict';
     var loc, x, y, box;
@@ -376,7 +453,7 @@ canvas.onmousemove = function (e) {
 canvas.onmouseup = function (e) {
     dragging = false;
 };
-
+*/
 askme.onclick = function (e) {
     'use strict';
     e.preventDefault();
